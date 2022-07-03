@@ -38,36 +38,36 @@ renderCell c = scaled marginScale marginScale (base <> pipes)
     base = colored grey (polygon [(0, 100), (86.6, 50), (86.6, (-50)), (0, (-100)), ((-86.6), (-50)), ((-86.6), 50)])
 
     pipes :: Picture
-    pipes = ((circle 20) <> upPipe) <> rightUpPipe <> rightDownPipe <> downPipe <> leftDownPipe <> leftUpPipe
+    pipes = ((solidCircle 19) <> upPipe) <> rightUpPipe <> rightDownPipe <> downPipe <> leftDownPipe <> leftUpPipe
 
     upPipe :: Picture
     upPipe
-      | ((up c) == Opened) = rotated 30 (polyline [(0, 0), (0, 86.6)])
+      | ((up c) == Opened) = rotated (pi / 6) (thickPolyline 40 [(0, 0), (0, 87)])
       | otherwise          = blank
 
     downPipe :: Picture
     downPipe
-      | ((down c) == Opened) = rotated 210 (polyline [(0, 0), (0, 86.6)])
+      | ((down c) == Opened) = rotated (pi + pi / 6) (thickPolyline 40 [(0, 0), (0, 87)])
       | otherwise            = blank
 
     rightUpPipe :: Picture
     rightUpPipe
-      | ((rightUp c) == Opened) = rotated 90 (polyline [(0, 0), (0, 86.6)])
+      | ((rightUp c) == Opened) = rotated (pi / 2) (thickPolyline 40 [(0, 0), (0, 87)])
       | otherwise               = blank
 
     rightDownPipe :: Picture
     rightDownPipe
-      | ((rightDown c) == Opened) = rotated 150 (polyline [(0, 0), (0, 86.6)])
+      | ((rightDown c) == Opened) = rotated (pi - pi / 6) (thickPolyline 40 [(0, 0), (0, 87)])
       | otherwise                 = blank
 
     leftUpPipe :: Picture
     leftUpPipe
-      | ((leftUp c) == Opened) = rotated 270 (polyline [(0, 0), (0, 86.6)])
+      | ((leftUp c) == Opened) = rotated (pi + pi / 2) (thickPolyline 40 [(0, 0), (0, 87)])
       | otherwise              = blank
 
     leftDownPipe :: Picture
     leftDownPipe
-      | ((leftDown c) == Opened) = rotated 330 (polyline [(0, 0), (0, 86.6)])
+      | ((leftDown c) == Opened) = rotated (-(pi / 6)) (thickPolyline 40 [(0, 0), (0, 87)])
       | otherwise                = blank
 
 

@@ -21,7 +21,7 @@ height :: Int
 height = 10
 
 glossExample :: IO ()
-glossExample = activityOf (initialWorld width height) handleEventNew renderWorld
+glossExample = activityOf (initialWorld width height) handleEvent renderWorld
 
 handleEventNew :: Event -> World -> World
 handleEventNew ev world = world
@@ -33,12 +33,9 @@ updateWorld dt world = world
 renderThis :: World -> Picture
 renderThis world = circle 5
 
-{-
 -- Events ---------------------------------------------------------------------
 handleEvent :: Event -> World -> World
-handleEvent (EventKey (MouseButton _) _ _ (x, y)) world = updatePressedCell world cellPosition
+handleEvent (PointerPress (x, y)) world = updatePressedCell world cellPosition
   where
-    cellPosition = Just (0, 0)-- check it based on x and y
+    cellPosition = Just (x, y) -- check it based on x and y
 handleEvent _event world = world
--}
-

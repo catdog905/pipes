@@ -37,12 +37,29 @@ headOfWorldPlayQueue (World _map (h:taill)) = h
 
 setCellInWorld :: Integer -> Integer -> World -> World
 setCellInWorld xId yId world = World {
-  worldMap = setAtPosition yId row (worldMap world)
+  worldMap = setAtPosition xId row (worldMap world) -- 0 for test
   , playQueue = (tailOfWorldPlayQueue world) ++ [getRandomElemFromList (fromInteger ((xId + 100 * yId) `mod` 3)) availableCells]
 }
   where
-    row = setAtPosition xId (headOfWorldPlayQueue world) (getElemById (fromIntegral yId) (worldMap world))
+    row = setAtPosition yId (headOfWorldPlayQueue world) (getElemById (fromIntegral 0) (worldMap world)) -- 0 for test
 
-updatePressedCell :: World -> Maybe (Integer, Integer) -> World
+--getCellIndex :: World -> Int -> Int -> (Maybe (Int, Int))
+--getCellIndex world x y =
+--  where
+--    shiftX :: Float
+--    shiftX = gridScale * ((-86.6) * fromIntegral (length (getElemById 0 (worldMap world))))
+--    shiftY :: Float
+--    shiftY = gridScale * ((fromIntegral (length (worldMap world))) * (-50))
+
+--getCentersCoords :: [[Cell]] -> Float -> [[(Float, Float)]]
+--getCentersCoords [] _ = []
+--getCentersCoords (row : tail) i = [getCoordsInRow row (86.6 - (i `mod` 2) * 173 - shiftX, 150 * i - shiftY)] ++ (getCentersCoords tail (i + 1))
+--  where
+--    getCoordsInRow :: [Cell] -> Float-> Float -> [(Float, Float)]
+--    getCoordsInRow [] _ _         = []
+--    getCoordsInRow (cell : t) x y = [(x, y)] ++ (getCoordsInRow (x + 173) y t)
+
+
+updatePressedCell :: World -> Maybe (Double, Double) -> World
 updatePressedCell world Nothing = world
-updatePressedCell world (Just (xId, yId)) = setCellInWorld xId yId world
+updatePressedCell world (Just (xId, yId)) = setCellInWorld (floor xId) (floor yId) world
