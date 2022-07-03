@@ -1,25 +1,23 @@
 module RenderingOfUniverse where
 
 import Data.Tuple
-import Graphics.Gloss
 import Objects
 import UsefulFunctions
 
-
-
-
-renderWorld world = scale gridScale gridScale (renderQueue <> renderMap)
+import           CodeWorld
+{-
+renderWorld world = scaled gridScale gridScale (renderQueue <> renderMap)
   where
     renderGrid :: [[Cell]] -> Float -> Picture
     renderGrid [] _ = blank
-    renderGrid (row : t) n = (renderRow row) <> (translate (n * 86.6) 150 (renderGrid t (-n)))
+    renderGrid (row : t) n = (renderRow row) <> (translated (n * 86.6) 150 (renderGrid t (-n)))
 
     renderRow :: [Cell] -> Picture
     renderRow [] = blank
-    renderRow (cell : t) = (renderCell cell) <> (translate 173 0 (renderRow t))
+    renderRow (cell : t) = (renderCell cell) <> (translated 173 0 (renderRow t))
 
     centering :: Picture -> Picture
-    centering pic = translate shiftX shiftY pic
+    centering pic = translated shiftX shiftY pic
 
     renderMap :: Picture
     renderMap = (centering (renderGrid (worldMap world) 1))
@@ -30,44 +28,44 @@ renderWorld world = scale gridScale gridScale (renderQueue <> renderMap)
     shiftY = ((fromIntegral (length (worldMap world))) * (-50))
 
     renderQueue :: Picture
-    renderQueue = translate ((-43.3) * fromIntegral (length (playQueue world))) (shiftY * 2 + 200) (renderRow (playQueue world))
+    renderQueue = translated ((-43.3) * fromIntegral (length (playQueue world))) (shiftY * 2 + 200) (renderRow (playQueue world))
 
 renderCell :: Cell -> Picture
-renderCell c = scale marginScale marginScale (base <> pipes)
+renderCell c = scaled marginScale marginScale (base <> pipes)
   where
     base :: Picture
-    base = color (greyN 0.3) (polygon [(0, 100), (86.6, 50), (86.6, (-50)), (0, (-100)), ((-86.6), (-50)), ((-86.6), 50)])
+    base = colored grey (polygon [(0, 100), (86.6, 50), (86.6, (-50)), (0, (-100)), ((-86.6), (-50)), ((-86.6), 50)])
 
     pipes :: Picture
     pipes = ((circle 20) <> upPipe) <> rightUpPipe <> rightDownPipe <> downPipe <> leftDownPipe <> leftUpPipe
 
     upPipe :: Picture
     upPipe
-      | ((up c) == Opened) = rotate 30 (line [(0, 0), (0, 86.6)])
+      | ((up c) == Opened) = translated 0 30 (polyline [(0, 0), (0, 86.6)])
       | otherwise          = blank
 
     downPipe :: Picture
     downPipe
-      | ((down c) == Opened) = rotate 210 (line [(0, 0), (0, 86.6)])
+      | ((down c) == Opened) = rotated 210 (polyline [(0, 0), (0, 86.6)])
       | otherwise            = blank
 
     rightUpPipe :: Picture
     rightUpPipe
-      | ((rightUp c) == Opened) = rotate 90 (line [(0, 0), (0, 86.6)])
+      | ((rightUp c) == Opened) = rotated 90 (polyline [(0, 0), (0, 86.6)])
       | otherwise               = blank
 
     rightDownPipe :: Picture
     rightDownPipe
-      | ((rightDown c) == Opened) = rotate 150 (line [(0, 0), (0, 86.6)])
+      | ((rightDown c) == Opened) = rotated 150 (polyline [(0, 0), (0, 86.6)])
       | otherwise                 = blank
 
     leftUpPipe :: Picture
     leftUpPipe
-      | ((leftUp c) == Opened) = rotate 270 (line [(0, 0), (0, 86.6)])
+      | ((leftUp c) == Opened) = rotated 270 (polyline [(0, 0), (0, 86.6)])
       | otherwise              = blank
 
     leftDownPipe :: Picture
     leftDownPipe
-      | ((leftDown c) == Opened) = rotate 330 (line [(0, 0), (0, 86.6)])
+      | ((leftDown c) == Opened) = rotated 330 (polyline [(0, 0), (0, 86.6)])
       | otherwise                = blank
-
+-}

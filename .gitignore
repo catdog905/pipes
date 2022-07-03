@@ -1,7 +1,4 @@
-dist-newstyle/
-.obsidian/
-.stack-work/
-*~
+.DS_Store
 dist
 dist-*
 cabal-dev
@@ -20,14 +17,8 @@ cabal.sandbox.config
 *.aux
 *.hp
 *.eventlog
+.stack-work/
 cabal.project.local
 cabal.project.local~
 .HTF/
 .ghc.environment.*
-
-# Obsidian
-Knowledge\ Base/.obsidian
-Knowledge\ Base/.trash
-
-# IDE specific
-../.idea/
