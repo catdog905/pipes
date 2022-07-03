@@ -59,8 +59,8 @@ leftUpLineCell = Cell {
 availableCells :: [Cell]
 availableCells = [upDownCell, rightUpLineCell, leftUpLineCell]
 
-gridScale :: Float
-gridScale = 0.5
+gridScale :: Double
+gridScale = 0.01
 
-marginScale :: Float
+marginScale :: Double
 marginScale = 0.95

@@ -21,7 +21,7 @@ height :: Int
 height = 10
 
 glossExample :: IO ()
-glossExample = activityOf (initialWorld width height) handleEventNew renderThis
+glossExample = activityOf (initialWorld width height) handleEventNew renderWorld
 
 handleEventNew :: Event -> World -> World
 handleEventNew ev world = world

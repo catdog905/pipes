@@ -4,11 +4,12 @@ import Data.Tuple
 import Objects
 import UsefulFunctions
 
-import           CodeWorld
-{-
+import CodeWorld
+-- | Render whole Universe.
+renderWorld :: World -> Picture
 renderWorld world = scaled gridScale gridScale (renderQueue <> renderMap)
   where
-    renderGrid :: [[Cell]] -> Float -> Picture
+    renderGrid :: [[Cell]] -> Double -> Picture
     renderGrid [] _ = blank
     renderGrid (row : t) n = (renderRow row) <> (translated (n * 86.6) 150 (renderGrid t (-n)))
 
@@ -22,9 +23,9 @@ renderWorld world = scaled gridScale gridScale (renderQueue <> renderMap)
     renderMap :: Picture
     renderMap = (centering (renderGrid (worldMap world) 1))
 
-    shiftX :: Float
+    shiftX :: Double
     shiftX = ((-86.6) * fromIntegral (length (getElemById 0 (worldMap world))))
-    shiftY :: Float
+    shiftY :: Double
     shiftY = ((fromIntegral (length (worldMap world))) * (-50))
 
     renderQueue :: Picture
@@ -41,7 +42,7 @@ renderCell c = scaled marginScale marginScale (base <> pipes)
 
     upPipe :: Picture
     upPipe
-      | ((up c) == Opened) = translated 0 30 (polyline [(0, 0), (0, 86.6)])
+      | ((up c) == Opened) = rotated 30 (polyline [(0, 0), (0, 86.6)])
       | otherwise          = blank
 
     downPipe :: Picture
@@ -68,4 +69,5 @@ renderCell c = scaled marginScale marginScale (base <> pipes)
     leftDownPipe
       | ((leftDown c) == Opened) = rotated 330 (polyline [(0, 0), (0, 86.6)])
       | otherwise                = blank
--}
+
+
