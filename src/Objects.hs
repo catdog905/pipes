@@ -6,8 +6,11 @@ module Objects
     , marginScale
     , gridScale
     , upDownCell
+    , width
+    , height
     ) where
 
+import CodeWorld
 
 data GateStatus = Opened | Closed
   deriving (Eq)
@@ -19,11 +22,13 @@ data Cell = Cell {
   , rightUp :: GateStatus
   , leftUp :: GateStatus
   , leftDown :: GateStatus
+  , status :: Bool
 }
 
 data World = World {
   worldMap :: [[Cell]],
-  playQueue :: [Cell]
+  playQueue :: [Cell],
+  debug :: Picture
 }
 
 upDownCell :: Cell
@@ -34,6 +39,18 @@ upDownCell = Cell {
   , rightUp = Closed
   , leftUp = Closed
   , leftDown = Closed
+  , status = False
+}
+
+RightLeftCell :: Cell
+RightLeftCell = Cell {
+  up = Closed
+  , down = Closed
+  , rightDown = Closed
+  , rightUp = Opened
+  , leftUp = Closed
+  , leftDown = Opened
+  , status = False
 }
 
 rightUpLineCell :: Cell
@@ -44,6 +61,7 @@ rightUpLineCell = Cell {
   , rightUp = Opened
   , leftUp = Closed
   , leftDown = Opened
+  , status = False
 }
 
 leftUpLineCell :: Cell
@@ -54,13 +72,31 @@ leftUpLineCell = Cell {
   , rightUp = Closed
   , leftUp = Opened
   , leftDown = Closed
+  , status = False
+}
+
+source :: Cell
+source = Cell {
+  up = Closed
+  , down = Closed
+  , rightDown = Opened
+  , rightUp = Closed
+  , leftUp = Closed
+  , leftDown = Closed
+  , status = True
 }
 
 availableCells :: [Cell]
-availableCells = [upDownCell, rightUpLineCell, leftUpLineCell]
+availableCells = [upDownCell, rightUpLineCell, leftUpLineCell, RightLeftCell]
 
 gridScale :: Double
 gridScale = 0.01
 
 marginScale :: Double
 marginScale = 0.95
+
+width :: Int
+width = 10
+
+height :: Int
+height = 10
