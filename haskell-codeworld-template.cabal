@@ -45,6 +45,7 @@ library
       base >=4.7 && <5
     , codeworld-api
     , random
+    , text
   default-language: Haskell2010
 
 executable haskell-codeworld-template
@@ -58,6 +59,7 @@ executable haskell-codeworld-template
       base >=4.7 && <5
     , codeworld-api
     , haskell-codeworld-template
+    , text
   default-language: Haskell2010
 
 test-suite doctests
@@ -92,4 +94,5 @@ test-suite spec
     , haskell-codeworld-template
     , hspec
     , random
+    , text
   default-language: Haskell2010

@@ -12,13 +12,9 @@ initialWorld :: Int -> Int -> World
 initialWorld width height= World {
   worldMap = generateCellsMatrix width height
   , playQueue = availableCells
+  , debug = blank
 }
 
-width :: Int
-width = 10
-
-height :: Int
-height = 10
 
 glossExample :: IO ()
 glossExample = activityOf (initialWorld width height) handleEvent renderWorld

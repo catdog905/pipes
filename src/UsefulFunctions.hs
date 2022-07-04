@@ -2,10 +2,13 @@ module UsefulFunctions where
 
 import Objects
 import System.Random
+import Data.Fixed
+import CodeWorld
+import Data.Text
 
 getElemById :: Int -> [a] -> a
 getElemById n (a:taill)
-  | n >= (length (a:taill)) = head taill
+  | n >= (Prelude.length (a:taill)) = Prelude.head taill
 getElemById 0 (a:taill) = a
 getElemById id (a:taill) = getElemById (id - 1) taill
 
@@ -13,7 +16,7 @@ seed :: Int
 seed = 25
 
 getRandomElemFromList :: Int -> [a] -> a
-getRandomElemFromList id list = getElemById (id `mod` (length list)) list
+getRandomElemFromList id list = getElemById (id `mod` (Prelude.length list)) list
 
 generateCellsRow :: Int -> Int -> [Cell]
 generateCellsRow id 0 = []
@@ -30,36 +33,56 @@ setAtPosition 0 obj (h:taill) = obj : taill
 setAtPosition n obj (h:taill) = h : (setAtPosition (n - 1) obj taill)
 
 tailOfWorldPlayQueue :: World -> [Cell]
-tailOfWorldPlayQueue (World _map (h:taill)) = taill
+tailOfWorldPlayQueue (World _map (h:taill) _) = taill
 
-headOfWorldPlayQueue :: World ->  Cell
-headOfWorldPlayQueue (World _map (h:taill)) = h
+headOfWorldPlayQueue :: World -> Cell
+headOfWorldPlayQueue (World _map (h:taill) _) = h
 
 setCellInWorld :: Integer -> Integer -> World -> World
-setCellInWorld xId yId world = World {
-  worldMap = setAtPosition xId row (worldMap world) -- 0 for test
-  , playQueue = (tailOfWorldPlayQueue world) ++ [getRandomElemFromList (fromInteger ((xId + 100 * yId) `mod` 3)) availableCells]
-}
+setCellInWorld xId yId world
+--  | (floor ((fromIntegral xId) / 173 * 100 + 1.5)) < 0 || yId < 0 = world
+--  | (floor ((fromIntegral xId) / 173 * 100 + 1.5)) >= (toInteger width) || yId >= (toInteger height) = world
+  | otherwise          = World {
+    worldMap = setAtPosition (floor ((fromIntegral yId) / 3 * 2)) row (worldMap world) -- 0 for test
+    , playQueue = (tailOfWorldPlayQueue world) ++ [getRandomElemFromList (fromInteger (((floor ((fromIntegral xId) / 173 * 100 + 1.5)) + 150 * (yId)) `mod` 3)) availableCells]
+    , debug = translated 10 8 ((lettering (pack (show (floor ((fromIntegral xId) / 173 * 100 + 1.5)))))) -- <> translated 12 8 ((lettering (pack (show ((fromIntegral yId) / 3 * 2))))) -- renderGrid (getCentersCoords (worldMap world) 1)
+  }
   where
-    row = setAtPosition yId (headOfWorldPlayQueue world) (getElemById (fromIntegral 0) (worldMap world)) -- 0 for test
+    row = setAtPosition (floor ((fromIntegral xId) / 173 * 100 + 1.5)) (headOfWorldPlayQueue world) (getElemById (floor ((fromIntegral yId) / 3 * 2)) (worldMap world)) -- 0 for test
+    renderGrid :: [[(Double, Double)]] -> Picture
+    renderGrid [] = blank
+    renderGrid (row : t) = (renderRow row) <> (renderGrid t)
 
---getCellIndex :: World -> Int -> Int -> (Maybe (Int, Int))
---getCellIndex world x y =
---  where
---    shiftX :: Float
---    shiftX = gridScale * ((-86.6) * fromIntegral (length (getElemById 0 (worldMap world))))
---    shiftY :: Float
---    shiftY = gridScale * ((fromIntegral (length (worldMap world))) * (-50))
+    renderRow :: [(Double, Double)] -> Picture
+    renderRow [] = blank
+    renderRow ((x, y) : t) = (translated x y (colored red (circle (10 * gridScale)))) <> (renderRow t)
 
---getCentersCoords :: [[Cell]] -> Float -> [[(Float, Float)]]
---getCentersCoords [] _ = []
---getCentersCoords (row : tail) i = [getCoordsInRow row (86.6 - (i `mod` 2) * 173 - shiftX, 150 * i - shiftY)] ++ (getCentersCoords tail (i + 1))
+--
+--getCellIndex :: World -> Integer -> Integer -> (Maybe (Int, Int))
+--getCellIndex world x y = find coords x y
 --  where
---    getCoordsInRow :: [Cell] -> Float-> Float -> [(Float, Float)]
---    getCoordsInRow [] _ _         = []
---    getCoordsInRow (cell : t) x y = [(x, y)] ++ (getCoordsInRow (x + 173) y t)
+--    coords = (getCentersCoords (worldMap world) 1)
+--    find :: [[(Double, Double)]] -> Integer -> Integer -> (Maybe (Int, Int))
+--    find [] _ _ = Nothing
+--    find (row : tail) xx yy
+--      | (findInRow row xx yy)
+--    findIf :: (Maybe (Int, Int)) ->
+
+
+
+getCentersCoords :: [[Cell]] -> Double -> [[(Double, Double)]]
+getCentersCoords [] _ = []
+getCentersCoords (row : tail) i = [(getCoordsInRow row (86.6 - (mod' i 2) * 86.6) (150 * i))] ++ (getCentersCoords tail (i + 1))
+  where
+    getCoordsInRow :: [Cell] -> Double -> Double -> [(Double, Double)]
+    getCoordsInRow [] _ _         = []
+    getCoordsInRow (cell : t) x y = [((x + shiftX) * gridScale, (y + shiftY - 150) * gridScale)] ++ (getCoordsInRow t (x + 173) y)
+    shiftX :: Double
+    shiftX = ((-86.6) * fromIntegral width)
+    shiftY :: Double
+    shiftY = ((fromIntegral height) * (-50))
 
 
 updatePressedCell :: World -> Maybe (Double, Double) -> World
 updatePressedCell world Nothing = world
-updatePressedCell world (Just (xId, yId)) = setCellInWorld (floor xId) (floor yId) world
+updatePressedCell world (Just (xId, yId)) = setCellInWorld (floor (xId + 7)) (floor (yId + 6)) world

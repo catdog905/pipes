@@ -7,7 +7,7 @@ import UsefulFunctions
 import CodeWorld
 -- | Render whole Universe.
 renderWorld :: World -> Picture
-renderWorld world = scaled gridScale gridScale (renderQueue <> renderMap)
+renderWorld world = (debug world) <> (scaled gridScale gridScale ((debug world) <> renderQueue <> renderMap))
   where
     renderGrid :: [[Cell]] -> Double -> Picture
     renderGrid [] _ = blank
