@@ -48,7 +48,7 @@ setCellInWorld xId yId world
 --  | (floor ((fromIntegral xId) / 173 * 100 + 1.5)) >= (toInteger width) || yId >= (toInteger height) = world
   | otherwise          = World {
     worldMap = setAtPosition (floor ((fromIntegral yId) / 3 * 2)) row (worldMap world) -- 0 for test
-    , playQueue = (tailOfWorldPlayQueue world) ++ [getRandomElemFromList ((fromInteger (xId + yId + 1)) `mod` 5) availableCells]
+    , playQueue = (tailOfWorldPlayQueue world) ++ [getRandomElemFromList ((fromInteger (xId + yId + 1)) `mod` (Prelude.length availableCells)) availableCells]
     , debug = translated 10 8 ((lettering (pack (show (floor ((fromIntegral yId) / 173 * 100 + 1.5)))))) -- <> translated 12 8 ((lettering (pack (show ((fromIntegral yId) / 3 * 2))))) -- renderGrid (getCentersCoords (worldMap world) 1)
   }
   where
