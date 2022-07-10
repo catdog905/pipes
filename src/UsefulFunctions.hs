@@ -22,10 +22,14 @@ generateCellsRow :: Int -> Int -> [Cell]
 generateCellsRow id 0 = []
 generateCellsRow id n = (getRandomElemFromList id availableCells) : (generateCellsRow n (n-1))
 
+-- HARTCODE: source position is 0, 0
 generateCellsMatrix :: Int -> Int -> [[Cell]]
 generateCellsMatrix width 0 = []
-generateCellsMatrix width n = (generateCellsRow (width `mod` n + 34) width) : (generateCellsMatrix width (n-1))
+-- generateCellsMatrix width 1 = (firstSource (generateCellsRow 37 width)) : (generateCellsMatrix width 0)
+generateCellsMatrix width n = (generateCellsRow (width `mod` n + 37) width) : (generateCellsMatrix width (n-1))
 
+firstSource :: [Cell] -> [Cell]
+firstSource (a : t) = [source] ++ t
 
 setAtPosition :: Integer -> a -> [a] -> [a]
 setAtPosition _ obj [] = [obj]
@@ -44,8 +48,8 @@ setCellInWorld xId yId world
 --  | (floor ((fromIntegral xId) / 173 * 100 + 1.5)) >= (toInteger width) || yId >= (toInteger height) = world
   | otherwise          = World {
     worldMap = setAtPosition (floor ((fromIntegral yId) / 3 * 2)) row (worldMap world) -- 0 for test
-    , playQueue = (tailOfWorldPlayQueue world) ++ [getRandomElemFromList (fromInteger (((floor ((fromIntegral xId) / 173 * 100 + 1.5)) + 150 * (yId)) `mod` 3)) availableCells]
-    , debug = translated 10 8 ((lettering (pack (show (floor ((fromIntegral xId) / 173 * 100 + 1.5)))))) -- <> translated 12 8 ((lettering (pack (show ((fromIntegral yId) / 3 * 2))))) -- renderGrid (getCentersCoords (worldMap world) 1)
+    , playQueue = (tailOfWorldPlayQueue world) ++ [getRandomElemFromList ((fromInteger (xId + yId + 1)) `mod` 5) availableCells]
+    , debug = translated 10 8 ((lettering (pack (show (floor ((fromIntegral yId) / 173 * 100 + 1.5)))))) -- <> translated 12 8 ((lettering (pack (show ((fromIntegral yId) / 3 * 2))))) -- renderGrid (getCentersCoords (worldMap world) 1)
   }
   where
     row = setAtPosition (floor ((fromIntegral xId) / 173 * 100 + 1.5)) (headOfWorldPlayQueue world) (getElemById (floor ((fromIntegral yId) / 3 * 2)) (worldMap world)) -- 0 for test
@@ -70,19 +74,25 @@ setCellInWorld xId yId world
 
 
 
-getCentersCoords :: [[Cell]] -> Double -> [[(Double, Double)]]
-getCentersCoords [] _ = []
-getCentersCoords (row : tail) i = [(getCoordsInRow row (86.6 - (mod' i 2) * 86.6) (150 * i))] ++ (getCentersCoords tail (i + 1))
-  where
-    getCoordsInRow :: [Cell] -> Double -> Double -> [(Double, Double)]
-    getCoordsInRow [] _ _         = []
-    getCoordsInRow (cell : t) x y = [((x + shiftX) * gridScale, (y + shiftY - 150) * gridScale)] ++ (getCoordsInRow t (x + 173) y)
-    shiftX :: Double
-    shiftX = ((-86.6) * fromIntegral width)
-    shiftY :: Double
-    shiftY = ((fromIntegral height) * (-50))
+--getCentersCoords :: [[Cell]] -> Double -> [[(Double, Double)]]
+--getCentersCoords [] _ = []
+--getCentersCoords (row : tail) i = [(getCoordsInRow row (86.6 - (mod' i 2) * 86.6) (150 * i))] ++ (getCentersCoords tail (i + 1))
+--  where
+--    getCoordsInRow :: [Cell] -> Double -> Double -> [(Double, Double)]
+--    getCoordsInRow [] _ _         = []
+--    getCoordsInRow (cell : t) x y = [((x + shiftX) * gridScale, (y + shiftY - 150) * gridScale)] ++ (getCoordsInRow t (x + 173) y)
+--    shiftX :: Double
+--    shiftX = ((-86.6) * fromIntegral width)
+--    shiftY :: Double
+--    shiftY = ((fromIntegral height) * (-50))
 
 
 updatePressedCell :: World -> Maybe (Double, Double) -> World
 updatePressedCell world Nothing = world
 updatePressedCell world (Just (xId, yId)) = setCellInWorld (floor (xId + 7)) (floor (yId + 6)) world
+
+getXYElem :: [[a]] -> Int -> Int -> a
+getXYElem arr x y = getElemById x (getElemById y arr)
+
+setXYElem :: [[a]] -> Int -> Int -> a -> [[a]]
+setXYElem arr x y el = setAtPosition (fromIntegral y) (setAtPosition (fromIntegral x) el (getElemById y arr)) arr

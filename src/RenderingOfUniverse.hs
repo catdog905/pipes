@@ -32,13 +32,15 @@ renderWorld world = (debug world) <> (scaled gridScale gridScale ((debug world) 
     renderQueue = translated ((-43.3) * fromIntegral (length (playQueue world))) (shiftY * 2 + 200) (renderRow (playQueue world))
 
 renderCell :: Cell -> Picture
-renderCell c = scaled marginScale marginScale (base <> pipes)
+renderCell c
+  | (isWatered c) == False = scaled marginScale marginScale (base <> pipes)
+  | otherwise          =  colored blue (scaled marginScale marginScale (base <> pipes))
   where
     base :: Picture
     base = colored grey (polygon [(0, 100), (86.6, 50), (86.6, (-50)), (0, (-100)), ((-86.6), (-50)), ((-86.6), 50)])
 
     pipes :: Picture
-    pipes = ((solidCircle 19) <> upPipe) <> rightUpPipe <> rightDownPipe <> downPipe <> leftDownPipe <> leftUpPipe
+    pipes = (solidCircle 19) <> upPipe <> rightUpPipe <> rightDownPipe <> downPipe <> leftDownPipe <> leftUpPipe
 
     upPipe :: Picture
     upPipe

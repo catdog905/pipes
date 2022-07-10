@@ -4,7 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bad06c7f-5dc0-4aa9-b05a-d76cad5e30e1" name="Changes" comment="" />
+    <list default="true" id="bad06c7f-5dc0-4aa9-b05a-d76cad5e30e1" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Lib.hs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Lib.hs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Objects.hs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Objects.hs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/RenderingOfUniverse.hs" beforeDir="false" afterPath="$PROJECT_DIR$/src/RenderingOfUniverse.hs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/UsefulFunctions.hs" beforeDir="false" afterPath="$PROJECT_DIR$/src/UsefulFunctions.hs" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -32,7 +38,7 @@
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -50,7 +56,9 @@
       <workItem from="1656864169746" duration="3922000" />
       <workItem from="1656875896165" duration="3986000" />
       <workItem from="1656880243890" duration="9677000" />
-      <workItem from="1656918867878" duration="16572000" />
+      <workItem from="1656918867878" duration="26044000" />
+      <workItem from="1657269817632" duration="545000" />
+      <workItem from="1657284913747" duration="19591000" />
     </task>
     <servers />
   </component>
