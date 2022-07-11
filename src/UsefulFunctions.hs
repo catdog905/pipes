@@ -12,9 +12,6 @@ getElemById n (a:taill)
 getElemById 0 (a:taill) = a
 getElemById id (a:taill) = getElemById (id - 1) taill
 
-seed :: Int
-seed = 25
-
 getRandomElemFromList :: Int -> [a] -> a
 getRandomElemFromList id list = getElemById (id `mod` (Prelude.length list)) list
 
@@ -37,19 +34,23 @@ setAtPosition 0 obj (h:taill) = obj : taill
 setAtPosition n obj (h:taill) = h : (setAtPosition (n - 1) obj taill)
 
 tailOfWorldPlayQueue :: World -> [Cell]
-tailOfWorldPlayQueue (World _map (h:taill) _) = taill
+tailOfWorldPlayQueue (World _map (h:taill) _ _ _) = taill
 
 headOfWorldPlayQueue :: World -> Cell
-headOfWorldPlayQueue (World _map (h:taill) _) = h
+headOfWorldPlayQueue (World _map (h:taill) _ _ _) = h
 
 setCellInWorld :: Integer -> Integer -> World -> World
 setCellInWorld xId yId world
---  | (floor ((fromIntegral xId) / 173 * 100 + 1.5)) < 0 || yId < 0 = world
---  | (floor ((fromIntegral xId) / 173 * 100 + 1.5)) >= (toInteger width) || yId >= (toInteger height) = world
+  | (floor ((fromIntegral xId) / 173 * 100 + 1.5)) < 0 || yId < 0 = world
+  | (floor ((fromIntegral xId) / 173 * 100 + 1.5)) >= (toInteger width) || (floor ((fromIntegral yId) / 3 * 2)) >= (toInteger height) = world
+  | (floor ((fromIntegral xId) / 173 * 100 + 1.5)) == sinkX && (floor ((fromIntegral yId) / 3 * 2)) == sinkY = world -- sink
+  | (floor ((fromIntegral xId) / 173 * 100 + 1.5)) == 0 && (floor ((fromIntegral yId) / 3 * 2)) == 0 = world -- source cant be changed
   | otherwise          = World {
     worldMap = setAtPosition (floor ((fromIntegral yId) / 3 * 2)) row (worldMap world) -- 0 for test
-    , playQueue = (tailOfWorldPlayQueue world) ++ [getRandomElemFromList ((fromInteger (xId + yId + 1)) `mod` (Prelude.length availableCells)) availableCells]
-    , debug = translated 10 8 ((lettering (pack (show (floor ((fromIntegral yId) / 173 * 100 + 1.5)))))) -- <> translated 12 8 ((lettering (pack (show ((fromIntegral yId) / 3 * 2))))) -- renderGrid (getCentersCoords (worldMap world) 1)
+    , playQueue = (tailOfWorldPlayQueue world) ++ [getRandomElemFromList ((seed world) `mod` (Prelude.length availableCells)) availableCells]
+    , debug = debug world --translated 10 8 ((lettering (pack (show (floor ((fromIntegral yId) / 173 * 100 + 1.5)))))) -- <> translated 12 8 ((lettering (pack (show ((fromIntegral yId) / 3 * 2))))) -- renderGrid (getCentersCoords (worldMap world) 1)
+    , menu = (menu world)
+    , seed = generateNewSeed (seed world)
   }
   where
     row = setAtPosition (floor ((fromIntegral xId) / 173 * 100 + 1.5)) (headOfWorldPlayQueue world) (getElemById (floor ((fromIntegral yId) / 3 * 2)) (worldMap world)) -- 0 for test
@@ -96,3 +97,6 @@ getXYElem arr x y = getElemById x (getElemById y arr)
 
 setXYElem :: [[a]] -> Int -> Int -> a -> [[a]]
 setXYElem arr x y el = setAtPosition (fromIntegral y) (setAtPosition (fromIntegral x) el (getElemById y arr)) arr
+
+generateNewSeed :: Int -> Int
+generateNewSeed a = (a * 51 + 13) `mod` 1000000007

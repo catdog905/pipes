@@ -5,13 +5,24 @@ import Objects
 import UsefulFunctions
 
 import CodeWorld
--- | Render whole Universe.
+-- | Rendering the whole Universe
 renderWorld :: World -> Picture
-renderWorld world = (debug world) <> (scaled gridScale gridScale ((debug world) <> renderQueue <> renderMap))
+renderWorld world = scaled gridScale gridScale (gameMenu <> renderDebug <> (renderQueue (playQueue world)) <> renderMap)
   where
-    renderGrid :: [[Cell]] -> Double -> Picture
-    renderGrid [] _ = blank
-    renderGrid (row : t) n = (renderRow row) <> (translated (n * 86.6) 150 (renderGrid t (-n)))
+    renderGrid :: [[Cell]] -> Double -> Int -> Picture
+    renderGrid [] _ _ = blank
+    renderGrid (row : t) n y
+      | y == sinkY = (renderRowWithSink row 0) <> (translated (n * 86.6) 150 (renderGrid t (-n) (sinkY + 1)))
+      | otherwise  = (renderRow row) <> (translated (n * 86.6) 150 (renderGrid t (-n) (y + 1)))
+
+    renderRowWithSink :: [Cell] -> Int -> Picture
+    renderRowWithSink [] _ = blank
+    renderRowWithSink (cell : t) x
+      | x == sinkX = (colored red (renderCell cell)) <> (translated 173 0 (renderRowWithSink t (sinkX + 1)))
+      | otherwise  = (renderCell cell) <> (translated 173 0 (renderRowWithSink t (x + 1)))
+
+    renderDebug :: Picture
+    renderDebug = translated (250 - shiftX) 0 (scaled 100 100 (debug world))
 
     renderRow :: [Cell] -> Picture
     renderRow [] = blank
@@ -21,15 +32,22 @@ renderWorld world = (debug world) <> (scaled gridScale gridScale ((debug world) 
     centering pic = translated shiftX shiftY pic
 
     renderMap :: Picture
-    renderMap = (centering (renderGrid (worldMap world) 1))
+    renderMap = (centering (renderGrid (worldMap world) 1 0))
 
     shiftX :: Double
-    shiftX = ((-86.6) * fromIntegral (length (getElemById 0 (worldMap world))))
+    shiftX = (-86.6) * (fromIntegral width)
     shiftY :: Double
-    shiftY = ((fromIntegral (length (worldMap world))) * (-50))
+    shiftY = (fromIntegral height) * (-50)
+    renderQueue :: [Cell] -> Picture
+    renderQueue a = translated ((-43.3) * fromIntegral (length a)) (shiftY * 2 + 200) (renderRowWithRedFirstEl a)
 
-    renderQueue :: Picture
-    renderQueue = translated ((-43.3) * fromIntegral (length (playQueue world))) (shiftY * 2 + 200) (renderRow (playQueue world))
+    renderRowWithRedFirstEl :: [Cell] -> Picture
+    renderRowWithRedFirstEl [] = blank
+    renderRowWithRedFirstEl (a : t) = (colored red (renderCell a)) <> (translated 173.2 0 (renderRow t))
+
+
+    gameMenu :: Picture
+    gameMenu = (clock (menu world)) <> (translated shiftX (shiftY - 200) (restartButton (menu world)))
 
 renderCell :: Cell -> Picture
 renderCell c

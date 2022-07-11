@@ -5,30 +5,39 @@ module Lib
 import RenderingOfUniverse
 import Objects
 import UsefulFunctions
+import Data.Text
 
 import CodeWorld
 
 initialWorld :: Int -> Int -> World
 initialWorld width height = World {
-  worldMap = setXYElem (generateCellsMatrix width height) 0 0 source
+  worldMap = setXYElem (setXYElem (generateCellsMatrix width height) 0 0 source) sinkX sinkY sink
   , playQueue = availableCells
   , debug = blank
+  , seed = 25
+  , menu = Menu {
+    clock = blank
+    , restartButton = (scaled 30 30 (lettering (pack "restart"))) <> (colored red (solidRectangle 100 100))
+  }
 }
-
 
 glossExample :: IO ()
 glossExample = activityOf (initialWorld width height) handleEvent renderWorld
 
--- Simulation -----------------------------------------------------------------
-updateWorld :: Float -> World -> World
-updateWorld dt world = updateWater world
-
-renderThis :: World -> Picture
-renderThis world = circle 5
-
 -- Events ---------------------------------------------------------------------
 handleEvent :: Event -> World -> World
-handleEvent (TimePassing dt) world = updateWater world
+handleEvent (TimePassing dt) world
+  | (isWatered (getXYElem (worldMap world) sinkX sinkY)) == False = updateWater world
+  | otherwise = World {
+    worldMap = setXYElem (setXYElem (generateCellsMatrix width height) 0 0 source) sinkX sinkY sink
+    , playQueue = availableCells
+    , debug = lettering (pack "You won!!!!!!")
+    , seed = seed world
+    , menu = Menu {
+      clock = blank
+      , restartButton = (scaled 30 30 (lettering (pack "restart"))) <> (colored red (solidRectangle 100 100))
+    }
+  }
 handleEvent (PointerPress (x, y)) world = updatePressedCell world cellPosition
   where
     cellPosition = Just (x, y) -- check it based on x and y
@@ -40,6 +49,8 @@ updateWater world = World {
   worldMap = sinkWater source (setXYElem (eraseRowWater (worldMap world)) 0 0 source) 0 1 RightDown
   , playQueue = (playQueue world)
   , debug = (debug world)
+  , menu = (menu world)
+  , seed = (seed world)
 }
 
 sinkWater :: Cell -> [[Cell]] -> Int -> Int -> Direction -> [[Cell]]
@@ -102,5 +113,3 @@ sinkCell cell = Cell {
   , leftDown = (leftDown cell)
   , isWatered = True
 }
-
-

@@ -11,6 +11,10 @@ module Objects
     , height
     , source
     , triple
+    , Menu (..)
+    , sink
+    , sinkY
+    , sinkX
     ) where
 
 import CodeWorld
@@ -33,7 +37,14 @@ data Cell = Cell {
 data World = World {
   worldMap :: [[Cell]],
   playQueue :: [Cell],
-  debug :: Picture
+  debug :: Picture,
+  menu :: Menu,
+  seed :: Int
+}
+
+data Menu = Menu {
+  restartButton :: Picture,
+  clock :: Picture
 }
 
 upDownCell :: Cell
@@ -168,6 +179,17 @@ source = Cell {
   , isWatered = True
 }
 
+sink :: Cell
+sink = Cell {
+  up = Closed
+  , down = Closed
+  , rightDown = Opened
+  , rightUp = Closed
+  , leftUp = Closed
+  , leftDown = Closed
+  , isWatered = False
+}
+
 availableCells :: [Cell]
 availableCells = [upDownCell, rightUpLineCell, rightLeftCell, leftUpLineCell, triple, downPair, rightUpPair, leftPair, leftDownPair, turnRightPair, leftRightPair]
 
@@ -182,3 +204,9 @@ width = 10
 
 height :: Int
 height = 10
+
+sinkX :: Int
+sinkX = width - 1
+
+sinkY :: Int
+sinkY = height - 1
