@@ -51,7 +51,8 @@ renderWorld world = scaled gridScale gridScale (gameMenu <> renderDebug <> (rend
 
 renderCell :: Cell -> Picture
 renderCell c
-  | (isWatered c) == False = scaled marginScale marginScale (base <> pipes)
+  | (isWatered c) == Empty = scaled marginScale marginScale (base <> pipes)
+  | (isWatered c) == Flooded = colored green (scaled marginScale marginScale (base <> pipes))
   | otherwise          =  colored blue (scaled marginScale marginScale (base <> pipes))
   where
     base :: Picture

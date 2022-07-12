@@ -109,3 +109,14 @@ setXYElem arr x y el = setAtPosition (fromIntegral y) (setAtPosition (fromIntegr
 
 generateNewSeed :: Int -> Int
 generateNewSeed a = (a * 51 + 13) `mod` 1000000007
+
+
+isNoFlood :: [[Cell]] -> Bool
+isNoFlood [] = True
+isNoFlood (hh : tt) = (isNoLineFlood hh) && (isNoFlood tt)
+
+isNoLineFlood :: [Cell] -> Bool
+isNoLineFlood [] = True
+isNoLineFlood (hh : tt)
+  | (isWatered hh) == Flooded = False
+  | otherwise                 = isNoLineFlood tt

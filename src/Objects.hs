@@ -15,6 +15,7 @@ module Objects
     , sink
     , sinkY
     , sinkX
+    , Status (..)
     ) where
 
 import CodeWorld
@@ -31,8 +32,11 @@ data Cell = Cell {
   , rightUp :: GateStatus
   , leftUp :: GateStatus
   , leftDown :: GateStatus
-  , isWatered :: Bool
+  , isWatered :: Status
 }
+
+data Status = Flooded | HasWater | Empty
+  deriving (Eq)
 
 data World = World {
   worldMap :: [[Cell]],
@@ -55,7 +59,7 @@ upDownCell = Cell {
   , rightUp = Closed
   , leftUp = Closed
   , leftDown = Closed
-  , isWatered = False
+  , isWatered = Empty
 }
 
 rightLeftCell :: Cell
@@ -66,7 +70,7 @@ rightLeftCell = Cell {
   , rightUp = Opened
   , leftUp = Closed
   , leftDown = Opened
-  , isWatered = False
+  , isWatered = Empty
 }
 
 rightUpLineCell :: Cell
@@ -77,7 +81,7 @@ rightUpLineCell = Cell {
   , rightUp = Opened
   , leftUp = Closed
   , leftDown = Opened
-  , isWatered = False
+  , isWatered = Empty
 }
 
 leftUpLineCell :: Cell
@@ -88,7 +92,7 @@ leftUpLineCell = Cell {
   , rightUp = Closed
   , leftUp = Opened
   , leftDown = Opened
-  , isWatered = False
+  , isWatered = Empty
 }
 
 triple :: Cell
@@ -99,7 +103,7 @@ triple = Cell {
   , rightUp = Closed
   , leftUp = Closed
   , leftDown = Opened
-  , isWatered = False
+  , isWatered = Empty
 }
 
 downPair :: Cell
@@ -110,7 +114,7 @@ downPair = Cell {
   , rightUp = Closed
   , leftUp = Closed
   , leftDown = Closed
-  , isWatered = False
+  , isWatered = Empty
 }
 
 rightUpPair :: Cell
@@ -121,7 +125,7 @@ rightUpPair = Cell {
   , rightUp = Opened
   , leftUp = Closed
   , leftDown = Closed
-  , isWatered = False
+  , isWatered = Empty
 }
 
 leftPair :: Cell
@@ -132,7 +136,7 @@ leftPair = Cell {
   , rightUp = Closed
   , leftUp = Opened
   , leftDown = Opened
-  , isWatered = False
+  , isWatered = Empty
 }
 
 leftDownPair :: Cell
@@ -143,7 +147,7 @@ leftDownPair = Cell {
   , rightUp = Closed
   , leftUp = Opened
   , leftDown = Closed
-  , isWatered = False
+  , isWatered = Empty
 }
 
 turnRightPair :: Cell
@@ -154,7 +158,7 @@ turnRightPair = Cell {
   , rightUp = Closed
   , leftUp = Opened
   , leftDown = Closed
-  , isWatered = False
+  , isWatered = Empty
 }
 
 leftRightPair :: Cell
@@ -165,7 +169,7 @@ leftRightPair = Cell {
   , rightUp = Opened
   , leftUp = Opened
   , leftDown = Closed
-  , isWatered = False
+  , isWatered = Empty
 }
 
 source :: Cell
@@ -176,7 +180,7 @@ source = Cell {
   , rightUp = Closed
   , leftUp = Closed
   , leftDown = Opened
-  , isWatered = True
+  , isWatered = HasWater
 }
 
 sink :: Cell
@@ -187,7 +191,7 @@ sink = Cell {
   , rightUp = Closed
   , leftUp = Closed
   , leftDown = Closed
-  , isWatered = False
+  , isWatered = Empty
 }
 
 availableCells :: [Cell]
