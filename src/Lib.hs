@@ -11,7 +11,7 @@ import CodeWorld
 
 initialWorld :: Int -> Int -> World
 initialWorld width height = World {
-  worldMap = setXYElem (setXYElem (generateCellsMatrix width height) 0 0 source) sinkX sinkY sink
+  worldMap = setXYElem (setXYElem (generateCellsMatrix width height 25) 0 0 source) sinkX sinkY sink
   , playQueue = availableCells
   , debug = blank
   , seed = 25
@@ -29,9 +29,9 @@ handleEvent :: Event -> World -> World
 handleEvent (TimePassing dt) world
   | (isWatered (getXYElem (worldMap world) sinkX sinkY)) == False = updateWater world
   | otherwise = World {
-    worldMap = setXYElem (setXYElem (generateCellsMatrix width height) 0 0 source) sinkX sinkY sink
+    worldMap = setXYElem (setXYElem (generateCellsMatrix width height (seed world)) 0 0 source) sinkX sinkY sink
     , playQueue = availableCells
-    , debug = lettering (pack "You won!!!!!!")
+    , debug = lettering (pack "You won!!!!!")
     , seed = seed world
     , menu = Menu {
       clock = blank

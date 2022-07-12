@@ -17,13 +17,12 @@ getRandomElemFromList id list = getElemById (id `mod` (Prelude.length list)) lis
 
 generateCellsRow :: Int -> Int -> [Cell]
 generateCellsRow id 0 = []
-generateCellsRow id n = (getRandomElemFromList id availableCells) : (generateCellsRow n (n-1))
+generateCellsRow id n = (getRandomElemFromList id availableCells) : (generateCellsRow (generateNewSeed id) (n-1))
 
--- HARTCODE: source position is 0, 0
-generateCellsMatrix :: Int -> Int -> [[Cell]]
-generateCellsMatrix width 0 = []
--- generateCellsMatrix width 1 = (firstSource (generateCellsRow 37 width)) : (generateCellsMatrix width 0)
-generateCellsMatrix width n = (generateCellsRow (width `mod` n + 37) width) : (generateCellsMatrix width (n-1))
+-- HARDCODED: source position is 0, 0
+generateCellsMatrix :: Int -> Int -> Int -> [[Cell]]
+generateCellsMatrix width 0 _    = []
+generateCellsMatrix width n seed = (generateCellsRow seed width) : (generateCellsMatrix width (n - 1) (generateNewSeed (seed + 1)))
 
 firstSource :: [Cell] -> [Cell]
 firstSource (a : t) = [source] ++ t
@@ -41,10 +40,20 @@ headOfWorldPlayQueue (World _map (h:taill) _ _ _) = h
 
 setCellInWorld :: Integer -> Integer -> World -> World
 setCellInWorld xId yId world
-  | (floor ((fromIntegral xId) / 173 * 100 + 1.5)) < 0 || yId < 0 = world
+  | (fromIntegral xId) >= (-3.5) && (fromIntegral xId) <= (-2) && (fromIntegral yId) >= (-2) && (fromIntegral yId) <= (-1)             = World { -- restart button
+    worldMap = setXYElem (setXYElem (generateCellsMatrix width height (seed world)) 0 0 source) sinkX sinkY sink
+    , playQueue = availableCells
+    , debug = blank
+    , seed = seed world
+    , menu = Menu {
+      clock = blank
+      , restartButton = (scaled 30 30 (lettering (pack "restart"))) <> (colored red (solidRectangle 100 100))
+    }
+  }
+  | (floor ((fromIntegral xId) / 173 * 100 + 1.5)) < 0 || yId < 0                                                                     = world
   | (floor ((fromIntegral xId) / 173 * 100 + 1.5)) >= (toInteger width) || (floor ((fromIntegral yId) / 3 * 2)) >= (toInteger height) = world
-  | (floor ((fromIntegral xId) / 173 * 100 + 1.5)) == sinkX && (floor ((fromIntegral yId) / 3 * 2)) == sinkY = world -- sink
-  | (floor ((fromIntegral xId) / 173 * 100 + 1.5)) == 0 && (floor ((fromIntegral yId) / 3 * 2)) == 0 = world -- source cant be changed
+  | (floor ((fromIntegral xId) / 173 * 100 + 1.5)) == sinkX && (floor ((fromIntegral yId) / 3 * 2)) == sinkY                          = world -- sink
+  | (floor ((fromIntegral xId) / 173 * 100 + 1.5)) == 0 && (floor ((fromIntegral yId) / 3 * 2)) == 0                                  = world -- source cant be changed
   | otherwise          = World {
     worldMap = setAtPosition (floor ((fromIntegral yId) / 3 * 2)) row (worldMap world) -- 0 for test
     , playQueue = (tailOfWorldPlayQueue world) ++ [getRandomElemFromList ((seed world) `mod` (Prelude.length availableCells)) availableCells]
