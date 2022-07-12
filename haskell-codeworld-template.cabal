@@ -31,9 +31,9 @@ custom-setup
 
 library
   exposed-modules:
-      Project
       Lib
       Objects
+      Project
       RenderingOfUniverse
       UsefulFunctions
   other-modules:
@@ -59,6 +59,7 @@ executable haskell-codeworld-template
       base >=4.7 && <5
     , codeworld-api
     , haskell-codeworld-template
+    , random
     , text
   default-language: Haskell2010
 
@@ -75,6 +76,8 @@ test-suite doctests
     , codeworld-api
     , doctest
     , template-haskell
+    , random
+    , text
   default-language: Haskell2010
 
 test-suite spec
