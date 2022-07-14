@@ -27,7 +27,7 @@ generateCellsMatrix width n seed = (generateCellsRow seed width) : (generateCell
 firstSource :: [Cell] -> [Cell]
 firstSource (a : t) = [source] ++ t
 
-setAtPosition :: Integer -> a -> [a] -> [a]
+setAtPosition :: Int -> a -> [a] -> [a]
 setAtPosition _ obj [] = [obj]
 setAtPosition 0 obj (h:taill) = obj : taill
 setAtPosition n obj (h:taill) = h : (setAtPosition (n - 1) obj taill)
@@ -50,19 +50,20 @@ setCellInWorld xId yId world
       , restartButton = (scaled 30 30 (lettering (pack "restart"))) <> (colored red (solidRectangle 100 100))
     }
   }
-  | (xId / 173 * 100 + 1.5) < 0 || yId < 0                                  = world
-  | floor (xId / 173 * 100 + 1.5) >= width || floor (yId / 3 * 2) >= height = world
-  | floor (xId / 173 * 100 + 1.5) == sinkX && floor (yId / 3 * 2) == sinkY  = world -- sink
-  | floor (xId / 173 * 100 + 1.5) == 0     && floor (yId / 3 * 2) == 0      = world -- source cant be changed
+  | fst ind < 0      || snd ind < 0       = world
+  | fst ind >= width || snd ind >= height = world
+  | fst ind == sinkX && snd ind == sinkY  = world -- sink
+  | fst ind == 0     && snd ind == 0      = world -- source cant be changed
   | otherwise          = World {
-    worldMap = setAtPosition (floor (yId / 3 * 2)) row (worldMap world) -- 0 for test
+    worldMap = setAtPosition (snd ind) row (worldMap world) -- 0 for test
     , playQueue = (tailOfWorldPlayQueue world) ++ [getRandomElemFromList ((seed world) `mod` (Prelude.length availableCells)) availableCells]
-    , debug = debug world -- translated 10 8 ((lettering (pack (show (floor ((fromIntegral yId) / 173 * 100 + 1.5)))))) -- <> translated 12 8 ((lettering (pack (show ((fromIntegral yId) / 3 * 2))))) -- renderGrid (getCentersCoords (worldMap world) 1)
+    , debug = translated 1 8 ((lettering (pack (show ind)))) -- <> translated 12 8 ((lettering (pack (show ((fromIntegral yId) / 3 * 2))))) -- renderGrid (getCentersCoords (worldMap world) 1)
     , menu = (menu world)
     , seed = generateNewSeed (seed world)
   }
   where
-    row = setAtPosition (floor (xId / 173 * 100 + 1.5)) (headOfWorldPlayQueue world) (getElemById (floor (yId / 3 * 2)) (worldMap world)) -- 0 for test
+    -- TODO row change!!!! TODO
+    row = setAtPosition (fst ind) (headOfWorldPlayQueue world) (getElemById (snd ind) (worldMap world)) -- 0 for test
     renderGrid :: [[(Double, Double)]] -> Picture
     renderGrid [] = blank
     renderGrid (row : t) = (renderRow row) <> (renderGrid t)
@@ -71,35 +72,37 @@ setCellInWorld xId yId world
     renderRow [] = blank
     renderRow ((x, y) : t) = (translated x y (colored red (circle (10 * gridScale)))) <> (renderRow t)
 
---
---getCellIndex :: World -> Integer -> Integer -> (Maybe (Int, Int))
---getCellIndex world x y = find coords x y
---  where
---    coords = (getCentersCoords (worldMap world) 1)
---    find :: [[(Double, Double)]] -> Integer -> Integer -> (Maybe (Int, Int))
---    find [] _ _ = Nothing
---    find (row : tail) xx yy
---      | (findInRow row xx yy)
---    findIf :: (Maybe (Int, Int)) ->
-
-
-
---getCentersCoords :: [[Cell]] -> Double -> [[(Double, Double)]]
---getCentersCoords [] _ = []
---getCentersCoords (row : tail) i = [(getCoordsInRow row (86.6 - (mod' i 2) * 86.6) (150 * i))] ++ (getCentersCoords tail (i + 1))
---  where
---    getCoordsInRow :: [Cell] -> Double -> Double -> [(Double, Double)]
---    getCoordsInRow [] _ _         = []
---    getCoordsInRow (cell : t) x y = [((x + shiftX) * gridScale, (y + shiftY - 150) * gridScale)] ++ (getCoordsInRow t (x + 173) y)
---    shiftX :: Double
---    shiftX = ((-86.6) * fromIntegral width)
---    shiftY :: Double
---    shiftY = ((fromIntegral height) * (-50))
-
+    ind = getCentreIndex (changeCoordsSys (xId, yId))
 
 updatePressedCell :: World -> Maybe (Double, Double) -> World
 updatePressedCell world Nothing = world
-updatePressedCell world (Just (xId, yId)) = setCellInWorld (xId + 7) (yId + 6) world
+updatePressedCell world (Just (xId, yId)) = setCellInWorld (xId + 8.67) (yId + 5) world
+
+changeCoordsSys :: (Double, Double) -> (Double, Double)
+changeCoordsSys (x, y) = Prelude.foldr fun (10000, 10000) (getCentreCoords 0)
+  where
+    fun :: (Double, Double) -> (Double, Double) -> (Double, Double)
+    fun (x1, y1) (x2, y2)
+      | sqrt((x1-x)^2+(y1-y)^2) <= sqrt((x2-x)^2+(y2-y)^2) = (x1, y1)
+      | otherwise = (x2, y2)
+getCentreCoords :: Int -> [(Double, Double)]
+getCentreCoords y
+  | y == height - 1 = Prelude.take width (Prelude.map (\a -> get (a, fromIntegral(height - 1))) numbers)
+  | otherwise       = (Prelude.take width (Prelude.map (\a -> get (a, fromIntegral(y))) numbers)) ++ (getCentreCoords (y + 1))
+  where
+    get :: (Double, Double) -> (Double, Double)
+    get (xx, yy)
+      | yy `mod'` 2 <= 0.1 = (xx * 1.7320508, yy * 1.5)
+      | otherwise          = (0.8660254 + xx * 1.7320508, 0.5 + yy * 1.5)
+
+getCentreIndex :: (Double, Double) -> (Int, Int)
+getCentreIndex (x, y)
+  | y `mod'` 1 <= 0.1 = (floor (x / 1.7320508),floor(y / 1.5))
+  | otherwise         = (floor((x - 0.8660254) / 1.7320508),floor((y - 0.5) / 1.5))
+
+numbers :: [Double]
+numbers = 0 : (Prelude.map (+1) numbers)
+
 
 getXYElem :: [[a]] -> Int -> Int -> a
 getXYElem arr x y = getElemById x (getElemById y arr)
