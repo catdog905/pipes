@@ -38,9 +38,9 @@ tailOfWorldPlayQueue (World _map (h:taill) _ _ _) = taill
 headOfWorldPlayQueue :: World -> Cell
 headOfWorldPlayQueue (World _map (h:taill) _ _ _) = h
 
-setCellInWorld :: Integer -> Integer -> World -> World
+setCellInWorld :: Double -> Double -> World -> World
 setCellInWorld xId yId world
-  | (fromIntegral xId) >= (-3.5) && (fromIntegral xId) <= (-2) && (fromIntegral yId) >= (-2) && (fromIntegral yId) <= (-1)             = World { -- restart button
+  | xId >= (-2) && xId <= (-1.5) && yId >= (-2) && yId <= (-1)              = World { -- restart button
     worldMap = setXYElem (setXYElem (generateCellsMatrix width height (seed world)) 0 0 source) sinkX sinkY sink
     , playQueue = availableCells
     , debug = blank
@@ -50,19 +50,19 @@ setCellInWorld xId yId world
       , restartButton = (scaled 30 30 (lettering (pack "restart"))) <> (colored red (solidRectangle 100 100))
     }
   }
-  | (floor ((fromIntegral xId) / 173 * 100 + 1.5)) < 0 || yId < 0                                                                     = world
-  | (floor ((fromIntegral xId) / 173 * 100 + 1.5)) >= (toInteger width) || (floor ((fromIntegral yId) / 3 * 2)) >= (toInteger height) = world
-  | (floor ((fromIntegral xId) / 173 * 100 + 1.5)) == sinkX && (floor ((fromIntegral yId) / 3 * 2)) == sinkY                          = world -- sink
-  | (floor ((fromIntegral xId) / 173 * 100 + 1.5)) == 0 && (floor ((fromIntegral yId) / 3 * 2)) == 0                                  = world -- source cant be changed
+  | (xId / 173 * 100 + 1.5) < 0 || yId < 0                                  = world
+  | floor (xId / 173 * 100 + 1.5) >= width || floor (yId / 3 * 2) >= height = world
+  | floor (xId / 173 * 100 + 1.5) == sinkX && floor (yId / 3 * 2) == sinkY  = world -- sink
+  | floor (xId / 173 * 100 + 1.5) == 0     && floor (yId / 3 * 2) == 0      = world -- source cant be changed
   | otherwise          = World {
-    worldMap = setAtPosition (floor ((fromIntegral yId) / 3 * 2)) row (worldMap world) -- 0 for test
+    worldMap = setAtPosition (floor (yId / 3 * 2)) row (worldMap world) -- 0 for test
     , playQueue = (tailOfWorldPlayQueue world) ++ [getRandomElemFromList ((seed world) `mod` (Prelude.length availableCells)) availableCells]
-    , debug = debug world --translated 10 8 ((lettering (pack (show (floor ((fromIntegral yId) / 173 * 100 + 1.5)))))) -- <> translated 12 8 ((lettering (pack (show ((fromIntegral yId) / 3 * 2))))) -- renderGrid (getCentersCoords (worldMap world) 1)
+    , debug = debug world -- translated 10 8 ((lettering (pack (show (floor ((fromIntegral yId) / 173 * 100 + 1.5)))))) -- <> translated 12 8 ((lettering (pack (show ((fromIntegral yId) / 3 * 2))))) -- renderGrid (getCentersCoords (worldMap world) 1)
     , menu = (menu world)
     , seed = generateNewSeed (seed world)
   }
   where
-    row = setAtPosition (floor ((fromIntegral xId) / 173 * 100 + 1.5)) (headOfWorldPlayQueue world) (getElemById (floor ((fromIntegral yId) / 3 * 2)) (worldMap world)) -- 0 for test
+    row = setAtPosition (floor (xId / 173 * 100 + 1.5)) (headOfWorldPlayQueue world) (getElemById (floor (yId / 3 * 2)) (worldMap world)) -- 0 for test
     renderGrid :: [[(Double, Double)]] -> Picture
     renderGrid [] = blank
     renderGrid (row : t) = (renderRow row) <> (renderGrid t)
@@ -99,7 +99,7 @@ setCellInWorld xId yId world
 
 updatePressedCell :: World -> Maybe (Double, Double) -> World
 updatePressedCell world Nothing = world
-updatePressedCell world (Just (xId, yId)) = setCellInWorld (floor (xId + 7)) (floor (yId + 6)) world
+updatePressedCell world (Just (xId, yId)) = setCellInWorld (xId + 7) (yId + 6) world
 
 getXYElem :: [[a]] -> Int -> Int -> a
 getXYElem arr x y = getElemById x (getElemById y arr)
